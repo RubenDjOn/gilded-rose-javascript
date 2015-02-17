@@ -1,16 +1,19 @@
 /*sell_in numero dias para vender el item
 quality valor del item
 
-al final del dia ambos factores (sell_in y quality) reducen el valor de los items
 
+Normal
+Al final del dia ambos factores (sell_in y quality) reducen el valor de los items
 Cuando sell_in < 0 la calidad se degrada el doble de rápido
-El valor de la calidad nunca es negativo
-Aged Brie incrementa la calidad  según envejece
+
+Aged Brie incrementa la calidad según envejece
 Sulfuras no se puede vender y no decrece en calidad (quality)
 Backstage passes incrementa en calidad  y decrece el sell_in
     Calidad * 2  cuando 10 dias o menos en sell_in
     Calidad * 3  cuando 5 dias o menos en sell_in
     Calidad = 0 cuando sell_in == 0
+
+El valor de la calidad nunca es negativo
 
 Conjuros degragadan en calidad el doble de rapido
 */
@@ -34,7 +37,8 @@ var types = {
 'normal':'Normal Item',
 'backStage':'Backstage passes to a TAFKAL80ETC concert', 
 'agedBrie':'Aged Brie', 
-'sulfuras':'Sulfuras, Hand of Ragnaros'
+'sulfuras':'Sulfuras, Hand of Ragnaros',
+'conjured':'Conjured Mana Cake'
 };
 
 function update_quality(items) {
@@ -50,19 +54,24 @@ function update_quality(items) {
             currentItem.quality = currentItem.quality * 2; 
           }
           else if(currentItem.sell_in<5&&currentItem.sell_in>0){
-            currentItem.quality= currentItem.quality * 3;
+            currentItem.quality = currentItem.quality * 3;
           }
           break;
         case 'Aged Brie':
+            currentItem.quality+=1;
           break;
         case 'Sulfuras, Hand of Ragnaros':
           break;
-        case 'Normal Item':        
+        case 'Normal Item':
+          rate = currentItem.sell_in < 0 ? 2 : 1;
+          currentItem.quality-=rate;
+          currentItem.sell_in-=1;
           break;
     }
     currentItem.quality = currentItem.quality > 50 ? 50 : currentItem.quality;
-
+    currentItem.quality = currentItem.quality < 0 ? 0 : currentItem.quality;
   }
+
   /*for (var i = 0; i < items.length; i++) {
     if (items[i].name != 'Aged Brie' && items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
       if (items[i].quality > 0) {
